@@ -38,7 +38,10 @@ relationformer
 ├── vessel_graph     #3D vessel graph dataset
 |   └──
 |   └──
-└── road_network     #2D road network dataset
+└── road_network     #2D binary road network dataset
+|   └──
+|   └──
+└── road_network_rgb #2D RGB road network dataset
 |   └──
 |   └──
 └── scene_graph      #2D scene graph dataset
