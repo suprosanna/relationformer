@@ -1,0 +1,90 @@
+DATA:
+  DIM: 3                  # data dimension
+  BATCH_SIZE: 48          # Batch size for a single GPU, could be overwritten by command line argument
+  DATA_PATH: './data/vessel_data/train_data/'        # Path to dataset, could be overwritten by command line argument
+  TEST_DATA_PATH: './data/vessel_data/test_data/'
+  DATASET: 'synth_3d'     # Dataset name
+  IMG_SIZE: [64, 64, 64]  # Input image size
+  NUM_PATCH: 4            # no of patch from each volume
+  INTERPOLATION: 'bicubic'        # Interpolation to resize image (random, bilinear, bicubic)
+  PIN_MEMORY: True        # Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.
+  NUM_WORKERS: 16         # Number of data loading threads
+  SEED: 10                # random seed for reproducibility
+
+MODEL:
+  # default model parameters
+  DROP_PATH_RATE: 0.2
+  RESUME: ''
+  NUM_CLASSES: 2          # Number of classes, overwritten in data preparation
+  DROP_RATE: 0.1          # Dropout rate
+  LABEL_SMOOTHING: 0.1    # Label Smoothing
+
+  ENCODER:
+    TYPE: SE-RESNET
+    NAME: Squeeze-and-excite-resnet
+    EMBED_DIM: 256
+    PATCH_SIZE: [4, 4, 4]
+    IN_CHANS: 1
+    DEPTHS: [4, 4, 16, 4]
+
+  DECODER:
+    TYPE: def-DETR
+    NAME: deformable_DETR
+    HIDDEN_DIM: 384
+    NHEADS: 6
+    ENC_LAYERS: 4
+    DEC_LAYERS: 4
+    DIM_FEEDFORWARD: 1024
+    DROPOUT: 0.0
+    ACTIVATION: relu
+    NUM_FEATURE_LEVELS: 1
+    DEC_N_POINTS: 4
+    ENC_N_POINTS: 4
+    TWO_STAGE: False
+    OBJ_TOKEN: 80
+    RLN_TOKEN: 1
+    DUMMY_TOKEN: 0
+    RLN_ATTN: True
+  MATCHER:
+    NAME: 'Hungarian'
+    # matching cost
+    C_CLASS: 2
+    C_NODE: 5
+
+TRAIN:
+  START_EPOCH: 0
+  EPOCHS: 100
+  WARMUP_EPOCHS: 1
+  WEIGHT_DECAY: 0.0001
+  BASE_LR: 0.0001
+  WARMUP_LR: 0.000000001
+  MIN_LR: 5e-6
+  CLIP_GRAD: 5.0              # Clip gradient norm
+  AUTO_RESUME: True           # Auto resume from latest checkpoint
+  USE_CHECKPOINT: False       # could be overwritten by command line argument
+
+  # LR scheduler
+  LR_SCHEDULER.NAME: 'cosine'
+  LR_SCHEDULER.DECAY_EPOCHS: 30     # Epoch interval to decay LR, used in StepLRScheduler
+  LR_SCHEDULER.DECAY_RATE: 0.1      # LR decay rate, used in StepLRScheduler
+
+  # Optimizer
+  OPTIMIZER.NAME: 'adamw'
+  OPTIMIZER.EPS: 1e-8               # Optimizer Epsilon
+  OPTIMIZER.BETAS: (0.9, 0.999)     # Optimizer Betas
+  OPTIMIZER.MOMENTUM: 0.9           # SGD momentum
+  SAVE_PATH: "./trained_weights/"   # save path for the checkpoint, log and val results
+  VAL_INTERVAL: 10                  # validation interval
+  SAVE_VAL: True                    # save validation data
+
+  # loss weight
+  LOSSES: ['boxes', 'class', 'cards', 'nodes', 'edges']
+  W_BBOX: 3.0
+  W_CLASS: 3.0
+  W_CARD: 1.0
+  W_NODE: 2.0
+  W_EDGE: 4.0
+
+
+log:
+  exp_name: "synth_data_relationformer"
