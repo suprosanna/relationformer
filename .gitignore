@@ -1,0 +1,9 @@
+*runs
+.idea
+*__pycache__
+trained_weights
+.ipynb_checkpoints/
+.vscode
+resources
+*data*
+*models*
