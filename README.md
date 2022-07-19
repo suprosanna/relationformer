@@ -21,7 +21,7 @@ python setup.py install
 
 ## 1. Dataset preparation
 
-Please download [Synthetic Vessel dataset](https://github.com/giesekow/deepvesselnet/wiki/Datasets/) and organize them as following:
+Please download [20 US Cities dataset](https://github.com/songtaohe/Sat2Graph/tree/master/prepare_dataset) and organize them as following:
 
 ```
 code_root/
