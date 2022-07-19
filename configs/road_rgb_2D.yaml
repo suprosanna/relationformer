@@ -1,0 +1,82 @@
+DATA:
+  DIM: 2                  # data dimension
+  BATCH_SIZE: 32 #16
+  TEST_BATCH_SIZE: 128 #16
+  DATA_PATH: './data/20cities/train_data/'        # Path to dataset, could be overwritten by command line argument
+  TEST_DATA_PATH: './data/20cities/test_data/''
+  DATASET: 'US20-road-network-2D'     # Dataset name
+  IMG_SIZE: [128, 128]    # Input image size
+  NUM_WORKERS: 4          # Number of data loading threads
+  SEED: 10                # random seed for reproducibility
+
+MODEL:
+  NUM_CLASSES: 2          # Number of classes, overwritten in data preparation
+
+  ENCODER:
+    TYPE: deformable_transformer_backbone
+    NAME: deformable_transformer_backbone
+    HIDDEN_DIM: 512 #128 #256 #768
+    POSITION_EMBEDDING: sine
+    LR_BACKBONE: 2e-5
+    NUM_FEATURE_LEVELS: 4
+    BACKBONE: resnet101
+    MASKS: False
+    DILATION: False
+
+    # parameters used else where
+    IN_CHANS: 3
+    DEPTHS: [4, 4, 8, 8, 18]
+
+  DECODER:
+    TYPE: deformable_transformer
+    NAME: deformable_transformer
+    HIDDEN_DIM: 512 #128 #256 #768
+    NHEADS: 8
+    ENC_LAYERS: 4 #4 #2
+    DEC_LAYERS: 4 #4 #2
+    DIM_FEEDFORWARD: 1024 #128 #512 #2048
+    DROPOUT: 0.1  # 0.0
+    ACTIVATION: relu  
+    NUM_FEATURE_LEVELS: 4
+    DEC_N_POINTS: 4
+    ENC_N_POINTS: 4
+    TWO_STAGE: False
+    # NUM_QUERIES: 21
+    AUX_LOSS: False
+    WITH_BOX_REFINE: False
+    # RLN_TOKEN: True
+
+    OBJ_TOKEN: 80
+    RLN_TOKEN: 1
+    DUMMY_TOKEN: 0
+
+    RLN_ATTN: True # only do comb RLN_ATTN True + RLN_TOKEN 0 and reverse
+
+  MATCHER:
+    C_CLASS: 3
+    C_NODE: 5
+
+TRAIN:
+  EPOCHS: 100
+  LR: 2e-4
+  LR_BACKBONE: 2e-5
+  WEIGHT_DECAY: 1e-4
+  LR_DROP: 80
+  CLIP_MAX_NORM: 0.1  # hardcoded
+
+  SAVE_PATH: "./trained_weights/"          # save path for the checkpoint, log and val results
+  VAL_INTERVAL: 10                  # validation interval
+  SAVE_VAL: False                   # save validation data
+
+  # loss weight
+  LOSSES: ['boxes', 'class', 'cards', 'nodes', 'edges']
+  W_BBOX: 2.0
+  W_CLASS: 3.0
+  W_CARD: 1.0
+  W_NODE: 5.0
+  W_EDGE: 4.0
+
+
+log:
+  exp_name: 'baseline_road_resnet_def_detr_final_dec_4'
+  message: "Baseline 2D relationformer for 2D sat network"
