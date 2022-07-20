@@ -1,0 +1,112 @@
+DATA:
+  DIM: 2                  # data dimension
+  BATCH_SIZE: 2           # Batch size for a single GPU, could be overwritten by command line argument
+  VG_IMAGES: "./data/visual_genome/VG_100K"
+  IM_DATA_FN: "./data/visual_genome/stanford_filtered/image_data.json"
+  VG_SGG_FN: "./data/visual_genome/stanford_filtered/VG-SGG.h5"
+  LABEL_DATA_DIR: "./data/visual_genome/stanford_filtered/VG-SGG-dicts.json"
+  PROPOSAL_FN: "./data/visual_genome/stanford_filtered/proposals.h5"
+  FREQ_BIAS: "./data/visual_genome/VG.pt"
+  VG_TEST : True # true:run on test, false: run on validation
+  BOX_SCALE: 1024
+  IM_SCALE: [592, 592]
+  BG_EDGE_PER_IMG: 75
+  FG_EDGE_PER_IMG: 25
+  #Rel Recall Hyper Param Search
+  SORT_ONLY_BY_REL: True
+  USE_GT_FILTER: True
+  MEAN_RECALL: True          # mean recall
+  MULTI_PRED: True           #for evaluating graph w/o constraint
+  DATA_PATH: 'output'        # Path to dataset, could be overwritten by command line argument
+  DATASET: 'VG'     # Dataset name
+  IMG_SIZE: [64, 64, 64]  # Input image size
+  NUM_PATCH: 4            # no of patch from each volume
+  INTERPOLATION: 'bicubic'        # Interpolation to resize image (random, bilinear, bicubic)
+  PIN_MEMORY: True        # Pin CPU memory in DataLoader for more efficient (sometimes) transfer to GPU.
+  NUM_WORKERS: 16          # Number of data loading threads
+  SEED: 10                # random seed for reproducibility
+
+MODEL:
+  # default model parameters
+  RESUME: ''
+  PRETRAIN: ''
+  NUM_OBJ_CLS: 150        # Number of classes, overwritten in data preparation
+  NUM_REL_CLS: 50
+  LABEL_SMOOTHING: 0.1    # Label Smoothing
+
+  ENCODER:
+    TYPE: deformable_transformer_backbone
+    NAME: deformable_transformer_backbone
+    HIDDEN_DIM: 512
+    POSITION_EMBEDDING: sine
+    LR_BACKBONE: 2e-5
+    NUM_FEATURE_LEVELS: 3 #4
+    BACKBONE: resnet50
+    MASKS: False
+    DILATION: False
+    # default Swin Transformer parameters
+    PATCH_SIZE: [4, 4, 4]
+    IN_CHANS: 3
+
+    # TYPE: seresnet
+    DEPTHS: [4, 4, 8, 8]
+
+  DECODER:
+    TYPE: deformable_transformer
+    NAME: deformable_transformer
+    HIDDEN_DIM: 512
+    NHEADS: 8
+    ENC_LAYERS: 6
+    DEC_LAYERS: 6
+    DIM_FEEDFORWARD: 2048
+    DROPOUT: 0.15
+    ACTIVATION: relu
+    NUM_FEATURE_LEVELS: 4 #4
+    DEC_N_POINTS: 4
+    ENC_N_POINTS: 4
+    NUM_QUERIES: 201
+    # Deformable Detr Param
+    TWO_STAGE: False
+    INTERMEDIATE: True
+    AUX_LOSS: True
+    WITH_BOX_REFINE: True
+    #Relation parameter
+    FREQ_BIAS: True
+    FREQ_DR: 0.2
+    LOGSOFTMAX_FREQ: False
+    ADD_EMB_REL: True                 #add additional embedding in relation
+    DROPOUT_REL: True
+    NORM_REL_EMB: True
+
+TRAIN:
+  EPOCHS: 25
+  LR: 1e-4
+  LR_BACKBONE: 3e-5
+  WEIGHT_DECAY: 1e-4
+  LR_DROP: 23
+  CLIP_MAX_NORM: 0.1  # hardcoded
+  START_EPOCH: 0
+  FOCAL_LOSS_ALPHA: '' #''#None                  # use FOCAL LOSS, set NONE if you dnt want to use else 0.25
+
+  # Optimizer
+  OPTIMIZER.NAME: 'adamw'
+  OPTIMIZER.EPS: 1e-8               # Optimizer Epsilon
+  OPTIMIZER.BETAS: (0.9, 0.999)     # Optimizer Betas
+  OPTIMIZER.MOMENTUM: 0.9           # SGD momentum
+  EDGE_W_WARMUP: True
+  SAVE_PATH: "./trained_weights/"          # save path for the checkpoint, log and val results
+  VAL_INTERVAL: 1                  # validation interval
+  SAVE_VAL: True                    # save validation data
+
+  # loss weight
+  LOSSES: ['boxes', 'class', 'cards', 'nodes', 'edges',]
+  W_BBOX: 2.0
+  W_CLASS: 2.0
+  W_CARD: 1.0
+  W_NODE: 4.0
+  W_EDGE: 3.0
+
+
+log:
+  exp_name: "Visual Genome Experiment"
+  message: "Running Relationformer for VG"
