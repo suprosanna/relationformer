@@ -3,7 +3,7 @@
 
 [![DOI](https://img.shields.io/badge/arXiv-https%3A%2F%2Fdoi.org%2F10.48550%2FarXiv.2203.10202-B31B1B)](https://doi.org/10.48550/arXiv.2203.10202) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-![image-to-graph](problem_statment.png "Logo Title Text 1")
+![image-to-graph](.github/problem_statment.png "Logo Title Text 1")
 
 **What is image-to-graph?**  Image-to-graph is a general class of problem appearing in many forms in computer vision and medical imaging. Primarily, the task is to discover an image's underlying structural- or semantic- graph representation. A few examples are shown above.
 
@@ -15,7 +15,7 @@ In the case of spatio-semantic graph generation, e.g., scene graph generation fr
  Note that the 2D road network extraction and 3D vessel graph extraction tasks have undirected relations while the scene graph generation task has directed relations.
 
 
-![Relationformer](comparison.png )
+![Relationformer](.github/comparison.png )
 
 **What it is Relationformer?** Relationformer is a unified one-stage transformer-based framework that jointly predicts objects and their relations. We leverage direct set-based object prediction and incorporate the interaction among the objects to learn an object-relation representation simultaneously. In addition to existing [obj]-tokens, we propose a novel learnable token, namely the [rln]-token. Together with [obj]-tokens, [rln]-token exploits local and global semantic reasoning in an image through a series of mutual associations. In combination with the pair-wise [obj]-token, the [rln]-token contributes to a computationally efficient relation prediction.
 
