@@ -1,7 +1,7 @@
 DATA:
   DIM: 2                  # data dimension
   BATCH_SIZE: 64 #16
-  DATA_PATH: '/path/to/toulouse-road-network'        # Path to dataset, could be overwritten by command line argument
+  DATA_PATH: './data/toulouse-road-network'        # Path to dataset, could be overwritten by command line argument
   DATASET: 'toulouse-road-network-2D'     # Dataset name
   IMG_SIZE: [64, 64]  # Input image size
   NUM_WORKERS: 0          # Number of data loading threads
@@ -62,7 +62,7 @@ TRAIN:
   LR_DROP: 40
   CLIP_MAX_NORM: 0.1  # hardcoded
 
-  SAVE_PATH: "/path/to/models/relationformer"          # save path for the checkpoint, log and val results
+  SAVE_PATH: "./trained_weights/"       # save path for the checkpoint, log and val results
   VAL_INTERVAL: 1                  # validation interval
   SAVE_VAL: True                   # save validation data
 
@@ -73,7 +73,6 @@ TRAIN:
   W_CARD: 1.0
   W_NODE: 5.0
   W_EDGE: 1.0
-
 
 log:
   exp_name: 'experiment0'
