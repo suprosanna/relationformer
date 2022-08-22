@@ -11,7 +11,6 @@ import copy
 
 from .deformable_detr_backbone import build_backbone
 from .deformable_detr_2D import build_deforamble_transformer
-from .position_encoding_3D import PositionEmbeddingSine3D, PositionEmbeddingLearned
 from .utils import nested_tensor_from_tensor_list, NestedTensor, inverse_sigmoid,reset_parameters
 
 class RelationFormer(nn.Module):
