@@ -41,7 +41,7 @@ class RelationFormer(nn.Module):
             self.dropout_rel = nn.Dropout(p=config.MODEL.DECODER.DROPOUT)
         #relation embedding
         num_of_token = 3
-        input_dim = (self.hidden_dim*num_of_token +8) if self.add_emd_rel else self.hidden_dim*num_of_token #+2*self.num_classes
+        input_dim = (self.hidden_dim*num_of_token +8 +2*self.num_classes) if self.add_emd_rel else self.hidden_dim*num_of_token #+2*self.num_classes
         feed_fwd = config.MODEL.DECODER.DIM_FEEDFORWARD if hasattr(config.MODEL.DECODER, 'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB else self.hidden_dim
         self.relation_embed = MLP(input_dim, feed_fwd, config.MODEL.NUM_REL_CLS+1, 3,use_norm=hasattr(config.MODEL.DECODER, 'NORM_REL_EMB') and config.MODEL.DECODER.NORM_REL_EMB,
         dropout=config.MODEL.DECODER.DROPOUT)
