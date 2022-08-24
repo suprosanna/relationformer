@@ -46,8 +46,8 @@ class BasicSceneGraphEvaluator(ABC):
         evaluators = {m: cls(mode=m, multiple_preds=True, **kwargs) for m in ('preddet', 'phrdet')}
         return evaluators
 
-    def evaluate_scene_graph_entry(self, gt_entry, pred_entry, viz_dict=None, iou_thresh=iou_thresh):
-        res = evaluate_from_dict(gt_entry, pred_entry, self=self, iou_thresh=iou_thresh)
+    def evaluate_scene_graph_entry(self, gt_entry, pred_entry, viz_dict=None, iou_thresh=iou_thresh, vis=False):
+        res = evaluate_from_dict(gt_entry, pred_entry, self=self, iou_thresh=iou_thresh, vis=vis)
         return res
 
     def reset(self):
@@ -110,7 +110,7 @@ class BasicSceneGraphEvaluator(ABC):
         #         writer.add_scalar('edge_pred_acc', np.mean(self.edge_pred_acc), epoch_num)
         #         #writer.add_scalar('pred_vs_actual_edge', np.mean(self.edge_recall), epoch_num)
 
-def evaluate_from_dict(gt_entry, pred_entry, self=None, topfive=None, **kwargs):
+def evaluate_from_dict(gt_entry, pred_entry, self=None, topfive=None, vis=False, **kwargs):
     """
     Shortcut to doing evaluate_recall from dict
     :param gt_entry: Dictionary containing gt_relations, gt_boxes, gt_classes
@@ -209,10 +209,10 @@ def evaluate_from_dict(gt_entry, pred_entry, self=None, topfive=None, **kwargs):
                 sorted_rel_idx = np.argsort(predicate_scores)[::-1]
                 pred_rels = pred_rels[sorted_rel_idx]
                 predicate_scores = predicate_scores[sorted_rel_idx]
-        pred_to_gt, pred_5ples, rel_scores = evaluate_recall(
+        pred_to_gt, pred_5ples, rel_scores, sort_idx = evaluate_recall(
                     gt_rels, gt_boxes, gt_classes,
                     pred_rels, pred_boxes, pred_classes,
-                    predicate_scores, obj_scores, phrdet= self.mode=='phrdet',
+                    predicate_scores, obj_scores, phrdet= self.mode=='phrdet', vis=vis,
                     **kwargs)
 
         if self.mode in ('predcls', 'sgcls', 'sgdet', 'phrdet'):
@@ -246,7 +246,7 @@ def evaluate_from_dict(gt_entry, pred_entry, self=None, topfive=None, **kwargs):
 ###########################
 def evaluate_recall( gt_rels, gt_boxes, gt_classes,
                     pred_rels, pred_boxes, pred_classes, rel_scores=None, cls_scores=None,
-                    iou_thresh=0.5, phrdet=False,):
+                    iou_thresh=0.5, phrdet=False, vis=False):
     """
     Evaluates the recall
     :param gt_rels: [#gt_rel, 3] array of GT relations
@@ -282,6 +282,16 @@ def evaluate_recall( gt_rels, gt_boxes, gt_classes,
     pred_triplets, pred_triplet_boxes, relation_scores = \
         _triplet(pred_rels[:,2], pred_rels[:,:2], pred_classes, pred_boxes,
                  rel_scores, cls_scores)
+
+    scores_overall = relation_scores.prod(1)
+    
+    if vis==True:
+        sort_idx = np.argsort(scores_overall)[::-1]
+        pred_triplets = pred_triplets[sort_idx]
+        pred_triplet_boxes = pred_triplet_boxes[sort_idx]
+        relation_scores = relation_scores[sort_idx]
+    else:
+        sort_idx=None
 
     # Compute recall. It's most efficient to match once and then do recall after
     pred_to_gt = _compute_pred_matches(
@@ -427,10 +437,11 @@ def calculate_mR_from_evaluator_list(evaluator_list, mode, file_path, save_file=
         f.close()
 
 
-def eval_entry(mode, gt_entry, pred_entry, evaluator, evaluator_list):
+def eval_entry(mode, gt_entry, pred_entry, evaluator, evaluator_list, vis=False):
     evaluator[mode].evaluate_scene_graph_entry(
         gt_entry,
         pred_entry,
+        vis=vis,
     )
 
     for (pred_id, _, evaluator_rel) in evaluator_list:
@@ -443,6 +454,7 @@ def eval_entry(mode, gt_entry, pred_entry, evaluator, evaluator_list):
         evaluator_rel[mode].evaluate_scene_graph_entry(
             gt_entry_rel,
             pred_entry,
+            vis=vis,
         )
 
 ###########################################

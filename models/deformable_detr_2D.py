@@ -135,7 +135,6 @@ class DeformableTransformer(nn.Module):
 
     def forward(self, srcs, masks, query_embed, pos_embeds):
         assert self.two_stage or query_embed is not None
-
         # prepare input for encoder
         src_flatten = []
         mask_flatten = []
@@ -330,7 +329,7 @@ class DeformableTransformerDecoderLayer(nn.Module):
         tgt2, img_attn = self.multi_head_cross_attn(query=self.with_pos_embed(tgt_rln, query_pos[:, -1:, :]).transpose(0, 1),
                                           key=self.with_pos_embed(src, pos).transpose(0, 1),
                                           value=src.transpose(0, 1), attn_mask=None,
-                                          key_padding_mask=src_padding_mask)[0]
+                                          key_padding_mask=src_padding_mask)
         tgt_rln = tgt_rln + self.dropout12(tgt2.transpose(0, 1))
         tgt_rln = self.norm12(tgt_rln)
 
