@@ -20,7 +20,7 @@ python setup.py install
 
 ## 1. Dataset preparation
 
-Please download [Visual Genome dataset](https://visualgenome.org/) and [Stanford correction](https://github.com/rowanz/neural-motifs/tree/master/data/stanford_filtered) and organize them as following:
+Please download [Visual Genome dataset](https://visualgenome.org/), [Stanford correction](https://github.com/rowanz/neural-motifs/tree/master/data/stanford_filtered), [other files](https://drive.google.com/drive/folders/1ClYMg-1EHbf7ap4N-7aBoJlXkRtlKVa_?usp=sharing) (VG.pt, obj_count.pkl) for reproducibility and organize them as following:
 
 ```
 code_root/
