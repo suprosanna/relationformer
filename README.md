@@ -21,7 +21,7 @@ python setup.py install
 
 ## 1. Dataset preparation
 
-Please download [20 US Cities dataset](https://github.com/songtaohe/Sat2Graph/tree/master/prepare_dataset) and organize them as following:
+Please download [20 US Cities dataset](https://drive.google.com/drive/folders/1FlMcO3Jr8W4qboZUwxgRn6AlYc-AuxQ2?usp=sharing) and organize them as follows:
 
 ```
 code_root/
